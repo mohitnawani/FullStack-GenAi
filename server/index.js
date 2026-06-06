@@ -1,22 +1,30 @@
 const express = require('express');
 const connectDB = require('./src/config/db');
 const app = express();
+const authRouter = require('./src/routes/authRouter');
+const redis = require('./src/config/redisdb');
+
+app.use(express.json());
+app.use('/user', authRouter);
 
 
-const intialconnection = async () => {
+
+const InitalizeConnection = async () => {
   try {
-    await connectDB();
-    console.log('MongoDB connected');
+    await Promise.all([connectDB(), redis.connect()]);
+    console.log('✅ DB Connected');
+    console.log('✅ Redis Connected');
 
-    app.listen(process.env.PORT || 5000, () => {
-      console.log(`Server is running on port ${process.env.PORT || 5000}`);
+    app.listen(process.env.PORT, () => {
+      console.log(`🚀 Server listening at port: ${process.env.PORT}`);
+      console.log(`📍 Running at: http://localhost:${process.env.PORT}`);
     });
-    
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
+  } catch (err) {
+    console.error('❌ Initialization Error:', err);
     process.exit(1);
   }
-}
-intialconnection();
+};
+
+InitalizeConnection();
 
 
