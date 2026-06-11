@@ -3,8 +3,10 @@ const connectDB = require('./src/config/db');
 const app = express();
 const authRouter = require('./src/routes/authRouter');
 const redis = require('./src/config/redisdb');
+const cookieParser = require('cookie-parser');
 
 app.use(express.json());
+app.use(cookieParser());
 app.use('/user', authRouter);
 
 
@@ -26,5 +28,3 @@ const InitalizeConnection = async () => {
 };
 
 InitalizeConnection();
-
-
