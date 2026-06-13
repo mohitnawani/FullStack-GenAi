@@ -4,6 +4,12 @@ const app = express();
 const authRouter = require('./src/routes/authRouter');
 const redis = require('./src/config/redisdb');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
+
+app.use(cors({
+    origin: 'http://localhost:5173', // Replace with your frontend URL
+    credentials: true, // Allow cookies to be sent
+}));  
 
 app.use(express.json());
 app.use(cookieParser());
