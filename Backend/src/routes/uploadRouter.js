@@ -9,3 +9,5 @@ uploadRouter.get('/upload-signature', userMiddleware, generateUploadSignature);
 uploadRouter.post('/save', userMiddleware, saveDocumentMetadata);
 uploadRouter.get('/', userMiddleware, getMyDocuments);
 // uploadRouter.delete('/:id', userMiddleware, deleteDocument);
+
+module.exports = uploadRouter;
