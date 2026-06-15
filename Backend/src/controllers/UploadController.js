@@ -115,30 +115,29 @@ const getMyDocuments = async (req, res) => {
 };
 
 // DELETE /api/documents/:id
-const deleteDocument = async (req, res) => {
-  try {
-    const doc = await Document.findOne({
-      _id: req.params.id,
-      userId: req.result._id
-    });
+// const deleteDocument = async (req, res) => {
+//   try {
+//     const doc = await Document.findOne({
+//       _id: req.params.id,
+//       userId: req.result._id
+//     });
 
-    if (!doc) return res.status(404).json({ message: 'Document not found' });
+//     if (!doc) return res.status(404).json({ message: 'Document not found' });
 
-    await cloudinary.uploader.destroy(doc.cloudinaryPublicId, {
-      resource_type: doc.resourceType === 'video' ? 'video' : 'raw'
-    });
+//     await cloudinary.uploader.destroy(doc.cloudinaryPublicId, {
+//       resource_type: doc.resourceType === 'video' ? 'video' : 'raw'
+//     });
 
-    await doc.deleteOne();
-    res.json({ message: 'Document deleted successfully' });
+//     await doc.deleteOne();
+//     res.json({ message: 'Document deleted successfully' });
 
-  } catch (error) {
-    res.status(500).json({ message: 'Delete failed', error: error.message });
-  }
-};
+//   } catch (error) {
+//     res.status(500).json({ message: 'Delete failed', error: error.message });
+//   }
+// };
 
 module.exports = {
   generateUploadSignature,
   saveDocumentMetadata,
   getMyDocuments,
-  deleteDocument
 };

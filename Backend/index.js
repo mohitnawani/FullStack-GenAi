@@ -5,6 +5,7 @@ const authRouter = require('./src/routes/authRouter');
 const redis = require('./src/config/redisdb');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const uploadRouter = require('./src/routes/uploadRouter');
 
 app.use(cors({
     origin: 'http://localhost:5173', // Replace with your frontend URL
@@ -14,6 +15,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use('/user', authRouter);
+app.use('/api/documents',uploadRouter);
 
 
 
