@@ -12,10 +12,13 @@ function App() {
   const didCheckAuth = useRef(false)
   const [bootstrapped, setBootstrapped] = useState(false)
 
+  console.log("App rendered - isAuthenticated:", isAuthenticated, "loading:", loading)
+
   useEffect(() => {
     if (didCheckAuth.current) return
     didCheckAuth.current = true
     dispatch(checkAuth()).finally(() => setBootstrapped(true))
+    console.log("Auth check dispatched")
   }, [dispatch])
 
   if (!bootstrapped || loading) {
