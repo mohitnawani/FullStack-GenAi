@@ -8,9 +8,9 @@ const cors = require('cors');
 const uploadRouter = require('./src/routes/uploadRouter');
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Replace with your frontend URL
-    credentials: true, // Allow cookies to be sent
-}));  
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  credentials: true,
+}));
 
 app.use(express.json());
 app.use(cookieParser());
