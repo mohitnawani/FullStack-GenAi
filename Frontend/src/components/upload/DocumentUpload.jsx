@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useState } from "react";
-import useDocumentUpload from "../hooks/useDocumentUpload";
+import useDocumentUpload from "../../hooks/useDocumentUpload";
 
 const DocumentUpload = ({ onUploadSuccess }) => {
   const fileInputRef = useRef(null);
@@ -24,15 +24,14 @@ const DocumentUpload = ({ onUploadSuccess }) => {
     const result = await uploadDocument(file);
     console.log("Upload result:", result);
     if (result.success) {
-        setResult("true");
-      onUploadSuccess?.();               // refresh document list
-      fileInputRef.current.value = "";   // reset input
+      setResult("true");
+      onUploadSuccess?.(); // refresh document list
+      fileInputRef.current.value = ""; // reset input
     }
   };
 
   return (
     <div className="p-6 border-2 border-dashed border-base-300 rounded-xl text-center">
-
       <input
         type="file"
         ref={fileInputRef}
@@ -62,14 +61,14 @@ const DocumentUpload = ({ onUploadSuccess }) => {
       )}
 
       {/* error */}
-      {error && (
-        <p className="text-error text-sm mt-3">{error}</p>
-      )}
+      {error && <p className="text-error text-sm mt-3">{error}</p>}
 
       <p className="text-xs text-base-content/40 mt-3">
         PDF (max 10MB) or Video (max 100MB)
       </p>
-      {result === "true" && (<p className="text-success text-sm mt-3">Upload successful!</p>)}
+      {result === "true" && (
+        <p className="text-success text-sm mt-3">Upload successful!</p>
+      )}
     </div>
   );
 };

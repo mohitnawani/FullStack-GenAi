@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMyDocuments, deleteDocument } from "../api/documentApi";
+import { getMyDocuments, deleteDocument } from "../../api/documentApi";
 
 const DocumentList = ({ refresh }) => {
   const [docs, setDocs] = useState([]);
@@ -28,14 +28,16 @@ const DocumentList = ({ refresh }) => {
   };
 
   if (loading) return <p className="text-center mt-8">Loading...</p>;
-  if (!docs.length) return <p className="text-center mt-8 text-base-content/50">No documents yet</p>;
+  if (!docs.length)
+    return (
+      <p className="text-center mt-8 text-base-content/50">No documents yet</p>
+    );
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
       {docs.map((doc) => (
         <div key={doc._id} className="card bg-base-200 shadow">
           <div className="card-body p-4">
-
             {/* thumbnail for video */}
             {doc.resourceType === "video" && doc.thumbnailUrl && (
               <img
@@ -52,16 +54,20 @@ const DocumentList = ({ refresh }) => {
               </div>
             )}
 
-            <h3 className="font-semibold text-sm mt-2 truncate">{doc.filename}</h3>
+            <h3 className="font-semibold text-sm mt-2 truncate">
+              {doc.filename}
+            </h3>
 
             <div className="flex items-center justify-between mt-2">
-              <span className={`badge badge-sm ${
-                doc.status === "processed"
-                  ? "badge-success"
-                  : doc.status === "failed"
-                  ? "badge-error"
-                  : "badge-warning"
-              }`}>
+              <span
+                className={`badge badge-sm ${
+                  doc.status === "processed"
+                    ? "badge-success"
+                    : doc.status === "failed"
+                      ? "badge-error"
+                      : "badge-warning"
+                }`}
+              >
                 {doc.status}
               </span>
 
@@ -72,7 +78,6 @@ const DocumentList = ({ refresh }) => {
                 Delete
               </button>
             </div>
-
           </div>
         </div>
       ))}
