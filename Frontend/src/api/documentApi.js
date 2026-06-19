@@ -1,44 +1,56 @@
+import axios from "axios";
 import axiosClient from "../utils/axiosclient";
+
 // Step 1 — get signature from backend
 export const getUploadSignature = async (type) => {
   const res = await axiosClient.get(
     `/api/documents/upload-signature?type=${type}`,
-    { withCredentials: true }
+    { withCredentials: true },
   );
   return res.data;
 };
 
 // Step 2 — upload file directly to Cloudinary
 export const uploadToCloudinary = async (file, signatureData, onProgress) => {
-  const { signature, timestamp, public_id, api_key, cloud_name, upload_url } =
-    signatureData;
+  try {
+    console.log("Uploading file:", file);
+    const { signature, timestamp, public_id, api_key, cloud_name, upload_url } =
+      signatureData;
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("api_key", api_key);
-  formData.append("timestamp", timestamp);
-  formData.append("signature", signature);
-  formData.append("public_id", public_id);
+    console.log("Uploading to Cloudinary with signature data:", signatureData);
 
-  const res = await axiosClient.post(upload_url, formData, {
-    onUploadProgress: (progressEvent) => {
-      const percent = Math.round(
-        (progressEvent.loaded * 100) / progressEvent.total
-      );
-      if (onProgress) onProgress(percent); // for progress bar
-    },
-  });
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("api_key", api_key);
+    formData.append("timestamp", timestamp);
+    formData.append("signature", signature);
+    formData.append("public_id", public_id);
+    console.log("FormData prepared for Cloudinary upload:", formData);    
 
-  return res.data; // { secure_url, public_id, duration, ... }
+    const res = await axios.post(upload_url, formData, {
+      onUploadProgress: (progressEvent) => {
+        const percent = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total,
+        );
+
+        if (onProgress) {
+          onProgress(percent);
+        }
+      },
+    });
+
+    return res.data;
+  } catch (err) {
+    console.error("Cloudinary upload error:", err);
+    throw err;
+  }
 };
 
 // Step 3 — save metadata to backend
 export const saveDocumentMetadata = async (payload) => {
-  const res = await axiosClient.post(
-    `/api/documents/save`,
-    payload,
-    { withCredentials: true }
-  );
+  const res = await axiosClient.post(`/api/documents/save`, payload, {
+    withCredentials: true,
+  });
   return res.data;
 };
 

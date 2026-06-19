@@ -9,6 +9,7 @@ const DocumentUpload = ({ onUploadSuccess }) => {
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
+    console.log("Selected file:", file);
     if (!file) return;
 
     // validate — only PDF or video
@@ -21,6 +22,7 @@ const DocumentUpload = ({ onUploadSuccess }) => {
     }
 
     const result = await uploadDocument(file);
+    console.log("Upload result:", result);
     if (result.success) {
         setResult("true");
       onUploadSuccess?.();               // refresh document list

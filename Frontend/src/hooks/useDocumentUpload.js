@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axiosClient from "../utils/axiosclient";
 import {
   getUploadSignature,
   uploadToCloudinary,
@@ -12,6 +13,7 @@ const useDocumentUpload = () => {
 
   const uploadDocument = async (file) => {
     try {
+      console.log("Starting upload for file:", file.name);
       setUploading(true);
       setError(null);
       setProgress(0);
@@ -21,6 +23,7 @@ const useDocumentUpload = () => {
 
       // Step 1 — get signature
       const signatureData = await getUploadSignature(type);
+      console.log("Signature Data:", signatureData);
 
       // Step 2 — upload to Cloudinary
       const cloudinaryRes = await uploadToCloudinary(
@@ -28,6 +31,7 @@ const useDocumentUpload = () => {
         signatureData,
         (percent) => setProgress(percent)
       );
+      console.log("Cloudinary Response:", cloudinaryRes);
 
       // Step 3 — save metadata to backend
       await saveDocumentMetadata({
@@ -42,6 +46,7 @@ const useDocumentUpload = () => {
       return { success: true };
 
     } catch (err) {
+      console.error("Upload error:", err);
       setError(err.response?.data?.error || "Upload failed");
       return { success: false };
     } finally {
