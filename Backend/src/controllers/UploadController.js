@@ -1,5 +1,6 @@
 const cloudinary = require("cloudinary").v2;
 const Document = require("../models/Document");
+const ingestionDocument=require("../services/ragService")
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -105,36 +106,17 @@ const saveDocumentMetadata = async (req, res) => {
 // GET /api/documents
 const getMyDocuments = async (req, res) => {
   try {
-    const docs = await Document.find({ userId: req.result._id }).sort({
-      createdAt: -1,
-    });
-    res.json(docs);
+    const docs = await Document.find({ userId: req.result._id,cloudinaryUrl: req.cloudinaryUrl })
+
+    const output=ingestionDocument(documentId, cloudinaryUrl)
+
+    return res.status(400).json(output);
+    
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch documents" });
   }
 };
 
-// DELETE /api/documents/:id
-// const deleteDocument = async (req, res) => {
-//   try {
-//     const doc = await Document.findOne({
-//       _id: req.params.id,
-//       userId: req.result._id
-//     });
-
-//     if (!doc) return res.status(404).json({ message: 'Document not found' });
-
-//     await cloudinary.uploader.destroy(doc.cloudinaryPublicId, {
-//       resource_type: doc.resourceType === 'video' ? 'video' : 'raw'
-//     });
-
-//     await doc.deleteOne();
-//     res.json({ message: 'Document deleted successfully' });
-
-//   } catch (error) {
-//     res.status(500).json({ message: 'Delete failed', error: error.message });
-//   }
-// };
 
 module.exports = {
   generateUploadSignature,

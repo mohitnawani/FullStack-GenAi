@@ -41,6 +41,10 @@ const documentSchema = new mongoose.Schema(
       type: Number,   // only for pdf
       default: null,
     },
+    vectorNamespace:{
+      type:String,
+      default:null,
+    }
   },
   { timestamps: true }
 );
