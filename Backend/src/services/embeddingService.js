@@ -1,10 +1,11 @@
-const { GoogleGenerativeAIEmbeddings } =require("@langchain/google-genai");
-const axios = require("axios");
-const embeddings = new GoogleGenerativeAIEmbeddings({
-  apiKey: process.env.GEMINI_API_KEY,
-  modelName: "embedding-001",  // Gemini embedding model
-});
 
+import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
+
+const embeddings = new GoogleGenerativeAIEmbeddings({
+    apiKey: process.env.GEMINI_API_KEY,
+    model: 'text-embedding-004',
+  });
+  
 const generateEmbeddings = async (chunks) => {
   try {
     const embeddedChunks = await Promise.all(

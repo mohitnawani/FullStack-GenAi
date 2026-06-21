@@ -2,12 +2,15 @@ const { RecursiveCharacterTextSplitter } = require("@langchain/textsplitters");
 
 const splitTextIntoChunks = async (text, documentId) => {
   try {
+
+    // console.log(text)
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 300,
       chunkOverlap: 50,
     });
 
     const rawChunks = await splitter.splitText(text);
+    // console.log(rawChunks)
 
     const chunks = rawChunks.map((chunkText, index) => ({
       id: `${documentId}_chunk_${index}`,
