@@ -1,12 +1,12 @@
 // services/pineconeService.js
 const  { Pinecone } = require("@pinecone-database/pinecone");
-
+const axios = require("axios");
 // initialize pinecone client
 const pinecone = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY,
 });
 
-const index = pinecone.index(process.env.PINECONE_INDEX_NAME);
+const index = pinecone.index(process.env.PINECONE_INDEX);
 
 // ── UPSERT (store vectors during ingestion) ──
 const upsertVectors = async (embeddedChunks, documentId) => {
@@ -59,4 +59,4 @@ const deleteDocumentVectors = async (documentId) => {
   }
 };
 
-export { upsertVectors, querySimilarChunks, deleteDocumentVectors };
+module.exports = { upsertVectors, querySimilarChunks, deleteDocumentVectors };

@@ -1,6 +1,6 @@
 const cloudinary = require("cloudinary").v2;
 const Document = require("../models/Document");
-const ingestionDocument=require("../services/ragService")
+const {ingestDocument} = require("../services/ragService");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -28,7 +28,7 @@ const generateUploadSignature = async (req, res) => {
     );
 
     // resource_type: raw for pdf, video for video
-    const resourceType = type === "video" ? "video" :"image";
+    const resourceType = type === "video" ? "video" : "image";
 
     res.json({
       signature,
@@ -106,17 +106,28 @@ const saveDocumentMetadata = async (req, res) => {
 // GET /api/documents
 const getMyDocuments = async (req, res) => {
   try {
-    const docs = await Document.find({ userId: req.result._id,cloudinaryUrl: req.cloudinaryUrl })
+    const { cloudinaryUrl } = req.body;
+    console.log("url", cloudinaryUrl);
 
-    const output=ingestionDocument(documentId, cloudinaryUrl)
+    const doc = await Document.findOne({
+      userId: req.result._id,
+      cloudinaryUrl,
+    });
 
-    return res.status(400).json(output);
-    
+    if (!doc) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    const documentId = doc._id;
+    console.log("documentId", documentId);
+
+    const output = await ingestDocument(documentId, cloudinaryUrl);
+
+    res.status(200).json(output);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch documents" });
+    res.status(500).json({ message: "Failed to fetch documents", error: error.message });
   }
 };
-
 
 module.exports = {
   generateUploadSignature,

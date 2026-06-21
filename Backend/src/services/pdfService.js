@@ -9,6 +9,7 @@ const extractTextFromPDF = async (cloudinaryUrl) => {
     });
 
     const pdfBuffer = Buffer.from(response.data);
+    conso
 
     // Step 2: Extract text from buffer
     const pdfData = await pdfParse(pdfBuffer);
@@ -24,4 +25,4 @@ const extractTextFromPDF = async (cloudinaryUrl) => {
   }
 };
 
-export default extractTextFromPDF;
+module.exports= extractTextFromPDF;

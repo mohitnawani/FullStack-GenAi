@@ -1,5 +1,5 @@
 const { GoogleGenerativeAIEmbeddings } =require("@langchain/google-genai");
-
+const axios = require("axios");
 const embeddings = new GoogleGenerativeAIEmbeddings({
   apiKey: process.env.GEMINI_API_KEY,
   modelName: "embedding-001",  // Gemini embedding model
@@ -30,4 +30,4 @@ const generateEmbeddings = async (chunks) => {
   }
 };
 
-export { embeddings, generateEmbeddings };
+module.exports ={ embeddings, generateEmbeddings };
