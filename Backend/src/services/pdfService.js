@@ -1,28 +1,18 @@
-const axios = require("axios");
-const  pdfParse  = require("pdf-parse");
+const { PDFParse } = require("pdf-parse");
 
 const extractTextFromPDF = async (cloudinaryUrl) => {
   try {
-    // Step 1: Download PDF from Cloudinary as buffer
-    const response = await axios.get(cloudinaryUrl, {
-      responseType: "arraybuffer",
-    });
+    const parser = new PDFParse({ url: cloudinaryUrl });
 
-    const pdfBuffer = Buffer.from(response.data);
-    conso
-
-    // Step 2: Extract text from buffer
-    const pdfData = await pdfParse(pdfBuffer);
+    const result = await parser.getText();
 
     return {
-      text: pdfData.text,           // full extracted text
-      pageCount: pdfData.numpages,  // number of pages
-      info: pdfData.info,           // metadata (title, author etc)
+      text: result.text,
+      pageCount: result.pages.length,
     };
-
   } catch (error) {
     throw new Error(`PDF extraction failed: ${error.message}`);
   }
 };
 
-module.exports= extractTextFromPDF;
+module.exports = extractTextFromPDF;
