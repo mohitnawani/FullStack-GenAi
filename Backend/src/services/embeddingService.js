@@ -36,4 +36,4 @@ const generateEmbeddings = async (chunks) => {
   }
 };
 
-module.exports = { generateEmbeddings };
+module.exports = { generateEmbeddings,embeddings };
