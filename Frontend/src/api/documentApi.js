@@ -55,9 +55,11 @@ export const saveDocumentMetadata = async (payload) => {
 };
 
 // get all documents
-export const getMyDocuments = async () => {
-  const res = await axiosClient.get(`/api/documents`, {
-    withCredentials: true,
+export const getMyDocuments = async (cloudinaryUrl) => {
+  const res = await axiosClient.post(`/api/documents`, {
+    cloudinaryUrl,          // ← send it in the request body
+  }, {
+    withCredentials: true,  // ← options go as 3rd argument
   });
   return res.data;
 };

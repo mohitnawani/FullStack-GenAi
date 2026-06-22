@@ -4,6 +4,7 @@ import {
   getUploadSignature,
   uploadToCloudinary,
   saveDocumentMetadata,
+  getMyDocuments 
 } from "../api/documentApi";
 
 const useDocumentUpload = () => {
@@ -23,7 +24,6 @@ const useDocumentUpload = () => {
 
       // Step 1 — get signature
       const signatureData = await getUploadSignature(type);
-      console.log("Signature Data:", signatureData);
 
       // Step 2 — upload to Cloudinary
       const cloudinaryRes = await uploadToCloudinary(
@@ -41,6 +41,10 @@ const useDocumentUpload = () => {
         resourceType: type,
         duration: cloudinaryRes.duration || null,
       });
+
+      console.log(cloudinaryRes.secure_url)
+
+      const getDocuments= await getMyDocuments (cloudinaryRes.secure_url);
 
       setProgress(100);
       return { success: true };
