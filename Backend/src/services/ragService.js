@@ -40,6 +40,23 @@ const ingestDocument = async (documentId, cloudinaryUrl) => {
     await Document.findByIdAndUpdate(documentId, { status: "failed" });
     throw new Error(`Ingestion failed: ${error.message}`);
   }
-};
+}
+
+
+// ── RETRIVAL PIPELINE
+const retriveDocument=async ()=>{
+  try{
+
+  }
+
+  catch(err)
+  {
+    console.log("error ", err)
+    
+  }
+}
+
+
+
 
 module.exports = { ingestDocument };

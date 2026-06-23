@@ -6,6 +6,7 @@ const redis = require('./src/config/redisdb');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const uploadRouter = require('./src/routes/uploadRouter');
+const chatRouter= require('./src/routes/chatRouter')
 
 app.use(cors({
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/user', authRouter);
 app.use('/api/documents',uploadRouter);
+app.use('/api',chatRouter)
 
 
 
