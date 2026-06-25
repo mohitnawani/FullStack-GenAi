@@ -1,4 +1,4 @@
-const ChatHistory = require("../models/ChatHistory");
+const ChatHistory  = require("../models/ChatHistory");
 const Document = require("../models/Document");
 const {chatService} = require("../services/chatService")
 
@@ -6,6 +6,7 @@ const {chatService} = require("../services/chatService")
 const chat = async (req, res) => {
   try {
     const { question, documentId } = req.body;
+    console.log(`question${question}`)
     const userId = req.result._id;
 
     // validate input
@@ -35,8 +36,10 @@ const chat = async (req, res) => {
 
     //get existing chat history for context
     const existingChat = await ChatHistory.findOne({ userId, documentId });
+
     const chatHistory = existingChat ? existingChat.messages : [];
 
+    console.log(`chat history${chatHistory}`)
     // Step 5: get answer from RAG pipeline
     const { answer} = await chatService(
       question,
@@ -57,7 +60,7 @@ const chat = async (req, res) => {
           },
         },
       },
-      { upsert: true, new: true } // create if doesn't exist
+      { upsert: true, returnDocument: "after"} // create if doesn't exist
     );
 
     // Step 7: return answer
@@ -77,6 +80,7 @@ const chat = async (req, res) => {
     });
   }
 };
+
 
 // // GET /api/chat/:documentId  — fetch chat history
 // const getChatHistory = async (req, res) => {
