@@ -38,8 +38,6 @@ const chat = async (req, res) => {
     const existingChat = await ChatHistory.findOne({ userId, documentId });
 
     const chatHistory = existingChat ? existingChat.messages : [];
-
-    console.log(`chat history${chatHistory}`)
     // Step 5: get answer from RAG pipeline
     const { answer} = await chatService(
       question,

@@ -65,4 +65,4 @@ const upsertVectors = async (embeddedChunks, documentId) => {
 //   }
 // };
 
-module.exports = { upsertVectors };
+module.exports = { upsertVectors , index };
