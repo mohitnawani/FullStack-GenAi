@@ -64,7 +64,7 @@ const chat = async (req, res) => {
     // Step 7: return answer
     return res.status(200).json({
       success: true,
-      data: {
+      response: {
         question,
         answer,
       },
