@@ -13,6 +13,7 @@ app.use(cors({
   credentials: true,
 }));
 
+
 app.use(express.json());
 app.use(cookieParser());
 app.use('/user', authRouter);
@@ -37,4 +38,4 @@ const InitalizeConnection = async () => {
   }
 };
 
-InitalizeConnection();
+InitalizeConnection()
