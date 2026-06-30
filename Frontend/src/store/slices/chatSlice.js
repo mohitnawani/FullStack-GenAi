@@ -1,5 +1,4 @@
 const  { createAsyncThunk, createSlice } = require('@reduxjs/toolkit');
-const axiosClient= require('../../utils/axiosclient');
 const { askQuestion, getChatHistory, clearChatHistory, getDocumentStatus } = require('../../api/chatApi')
 
 

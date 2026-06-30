@@ -1,8 +1,7 @@
-import axios from "axios";
-import axiosClient from "../utils/axiosclient";
+const  axiosClient = require("../utils/axiosclient");
 
 // Step 1 — get signature from backend
-export const getUploadSignature = async (type) => {
+const getUploadSignature = async (type) => {
   const res = await axiosClient.get(
     `/api/documents/upload-signature?type=${type}`,
     { withCredentials: true },
@@ -11,7 +10,7 @@ export const getUploadSignature = async (type) => {
 };
 
 // Step 2 — upload file directly to Cloudinary
-export const uploadToCloudinary = async (file, signatureData, onProgress) => {
+const uploadToCloudinary = async (file, signatureData, onProgress) => {
   try {
     console.log("Uploading file:", file);
     const { signature, timestamp, public_id, api_key, cloud_name, upload_url } =
@@ -47,7 +46,7 @@ export const uploadToCloudinary = async (file, signatureData, onProgress) => {
 };
 
 // Step 3 — save metadata to backend
-export const saveDocumentMetadata = async (payload) => {
+const saveDocumentMetadata = async (payload) => {
   const res = await axiosClient.post(`/api/documents/save`, payload, {
     withCredentials: true,
   });
@@ -55,7 +54,7 @@ export const saveDocumentMetadata = async (payload) => {
 };
 
 // get all documents
-export const getMyDocuments = async (cloudinaryUrl) => {
+const getMyDocuments = async (cloudinaryUrl) => {
   const res = await axiosClient.post(`/api/documents`, {
     cloudinaryUrl,          // ← send it in the request body
   }, {
@@ -65,9 +64,11 @@ export const getMyDocuments = async (cloudinaryUrl) => {
 };
 
 // delete document
-export const deleteDocument = async (id) => {
+const deleteDocument = async (id) => {
   const res = await axiosClient.delete(`/api/documents/${id}`, {
     withCredentials: true,
   });
   return res.data;
 };
+
+module.exports = {getUploadSignature,uploadToCloudinary,saveDocumentMetadata,getMyDocuments,deleteDocument} 
