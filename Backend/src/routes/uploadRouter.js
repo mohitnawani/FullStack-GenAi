@@ -1,13 +1,14 @@
 const express = require('express');
 const {  generateUploadSignature,
   saveDocumentMetadata,
-  getMyDocuments} = require('../controllers/UploadController');
+  DocumentIngest} = require('../controllers/UploadController');
 const uploadRouter = express.Router();
 const userMiddleware = require('../middleware/userMiddleware');
 
 uploadRouter.get('/upload-signature', userMiddleware, generateUploadSignature);
 uploadRouter.post('/save', userMiddleware, saveDocumentMetadata);
-uploadRouter.post('/', userMiddleware, getMyDocuments);
-// uploadRouter.delete('/:id', userMiddleware, deleteDocument);
+uploadRouter.post('/ingest', userMiddleware, DocumentIngest);
+uploadRouter.post('/my-documents', userMiddleware, getMyDocuments);
+uploadRouter.delete('/:id', userMiddleware, deleteDocument);
 
 module.exports = uploadRouter;

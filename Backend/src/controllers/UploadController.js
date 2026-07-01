@@ -104,7 +104,7 @@ const saveDocumentMetadata = async (req, res) => {
 };
 
 // GET /api/documents
-const getMyDocuments = async (req, res) => {
+const DocumentIngest = async (req, res) => {
   try {
     const { cloudinaryUrl } = req.body;
     console.log("url", cloudinaryUrl);
@@ -129,8 +129,44 @@ const getMyDocuments = async (req, res) => {
   }
 };
 
+const getMyDocuments = async (req, res) => {
+  {
+    try{
+      const userId = req.result._id;
+      const documents = await Document.find({ userId }).sort({ createdAt: -1 });
+      res.status(200).json({ documents });
+    }
+
+    catch(error){
+      console.error("Error fetching documents:", error)
+      res.status(500).json({ message: "Failed to fetch documents", error: error.message });
+    }
+  }
+};
+
+const deleteDocument = async (req , res)=>{
+  try{
+    const {id}= req.params;
+    const doc = await Document.findOneAndDelete({_id:id, userId:req.request._id});
+
+    if(!doc)
+    {
+      return res.status(404).json ({message:"Document not found"})
+    }
+    res.status(200).json({ message: "Document deleted successfully" }); 
+  }
+
+  catch(error)
+  {
+    console.error("Error deleting document:", error)
+    res.status(500).json({ message: "Failed to delete document", error: error.message });
+  }
+};
+
 module.exports = {
   generateUploadSignature,
   saveDocumentMetadata,
+  DocumentIngest,
   getMyDocuments,
+  deleteDocument, 
 };
