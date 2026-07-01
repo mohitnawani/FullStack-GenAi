@@ -1,7 +1,8 @@
 const express = require('express');
 const {  generateUploadSignature,
   saveDocumentMetadata,
-  DocumentIngest} = require('../controllers/UploadController');
+  deleteDocument,
+  DocumentIngest,getMyDocuments } = require('../controllers/UploadController');
 const uploadRouter = express.Router();
 const userMiddleware = require('../middleware/userMiddleware');
 

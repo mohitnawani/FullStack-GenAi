@@ -1,7 +1,8 @@
-const  axiosClient = require("../utils/axiosclient");
+import  axiosClient from  "../utils/axiosclient";
+import axios from "axios";
 
 // Step 1 — get signature from backend
-const getUploadSignature = async (type) => {
+export const getUploadSignature = async (type) => {
   const res = await axiosClient.get(
     `/api/documents/upload-signature?type=${type}`,
     { withCredentials: true },
@@ -10,7 +11,7 @@ const getUploadSignature = async (type) => {
 };
 
 // Step 2 — upload file directly to Cloudinary
-const uploadToCloudinary = async (file, signatureData, onProgress) => {
+export const uploadToCloudinary = async (file, signatureData, onProgress) => {
   try {
     console.log("Uploading file:", file);
     const { signature, timestamp, public_id, api_key, cloud_name, upload_url } =
@@ -46,16 +47,16 @@ const uploadToCloudinary = async (file, signatureData, onProgress) => {
 };
 
 // Step 3 — save metadata to backend
-const saveDocumentMetadata = async (payload) => {
+export const saveDocumentMetadata = async (payload) => {
   const res = await axiosClient.post(`/api/documents/save`, payload, {
     withCredentials: true,
   });
   return res.data;
 };
 
-// get all documents
-const getMyDocuments = async (cloudinaryUrl) => {
-  const res = await axiosClient.post(`/api/documents`, {
+// Ingest document
+export const DocumentIngest = async (cloudinaryUrl) => {
+  const res = await axiosClient.post(`/api/documents/ingest`, {
     cloudinaryUrl,          // ← send it in the request body
   }, {
     withCredentials: true,  // ← options go as 3rd argument
@@ -64,11 +65,17 @@ const getMyDocuments = async (cloudinaryUrl) => {
 };
 
 // delete document
-const deleteDocument = async (id) => {
+export const deleteDocument = async (id) => {
   const res = await axiosClient.delete(`/api/documents/${id}`, {
     withCredentials: true,
   });
   return res.data;
 };
 
-module.exports = {getUploadSignature,uploadToCloudinary,saveDocumentMetadata,getMyDocuments,deleteDocument} 
+export const getMyDocuments = async () => {
+  const res = await axiosClient.get(`/api/documents/my-documents`, {
+    withCredentials: true,
+  });
+  return res.data;
+} 
+

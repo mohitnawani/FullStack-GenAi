@@ -1,19 +1,20 @@
-const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const {
+import {
   getUploadSignature,
   uploadToCloudinary,
   saveDocumentMetadata,
-  getMyDocuments,
+  DocumentIngest as documentIngestApi,
   deleteDocument,
-} = require("../../api/documentApi");
+  getMyDocuments as getMyDocumentsApi,
+} from "../../api/documentApi";
 
 // Get Upload Signature
 export const UploadSignature = createAsyncThunk(
   "document/uploadSignature",
-  async (documentId, { rejectWithValue }) => {
+  async (type, { rejectWithValue }) => {
     try {
-      const response = await getUploadSignature(documentId);
+      const response = await getUploadSignature(type);
       return response;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -22,12 +23,11 @@ export const UploadSignature = createAsyncThunk(
 );
 
 // Upload File to Cloudinary
-
 export const UploadDocument = createAsyncThunk(
   "document/uploadDocument",
-  async (formData, { rejectWithValue }) => {
+  async ({ file, signatureData, onProgress }, { rejectWithValue }) => {
     try {
-      const response = await uploadToCloudinary(formData);
+      const response = await uploadToCloudinary(file, signatureData, onProgress);
       return response;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -38,24 +38,23 @@ export const UploadDocument = createAsyncThunk(
 // Save Metadata
 export const SaveDocument = createAsyncThunk(
   "document/saveDocument",
-  async (data, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
-      const response = await saveDocumentMetadata(data);
-      return response;
+      const response = await saveDocumentMetadata(payload);
+      return response.document; // ✅ return just the document
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-// Get My Documents
-
-export const GetMyDocuments = createAsyncThunk(
-  "document/getMyDocuments",
-  async (_, { rejectWithValue }) => {
+// Ingest Document
+export const DocumentIngest = createAsyncThunk(
+  "document/documentIngest",
+  async (cloudinaryUrl, { rejectWithValue }) => {
     try {
-      const response = await getMyDocuments();
-      return response.documents;
+      const response = await documentIngestApi(cloudinaryUrl);
+      return response;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -65,10 +64,23 @@ export const GetMyDocuments = createAsyncThunk(
 // Delete Document
 export const DeleteDocument = createAsyncThunk(
   "document/deleteDocument",
-  async (documentId, { rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
-      await deleteDocument(documentId);
-      return documentId;
+      await deleteDocument(id);
+      return id; // ✅ return id to filter from state
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Get My Documents
+export const getMyDocuments = createAsyncThunk(
+  "document/getMyDocuments",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getMyDocumentsApi();
+      return response.documents; // ✅ return just the array
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -105,7 +117,6 @@ const documentSlice = createSlice({
         state.error = action.payload;
       })
 
-
       // ================= Upload Document =================
       .addCase(UploadDocument.pending, (state) => {
         state.loading = true;
@@ -119,34 +130,30 @@ const documentSlice = createSlice({
         state.error = action.payload;
       })
 
-
       // ================= Save Document =================
       .addCase(SaveDocument.pending, (state) => {
         state.loading = true;
       })
       .addCase(SaveDocument.fulfilled, (state, action) => {
         state.loading = false;
-        state.documents.push(action.payload);
+        state.documents.push(action.payload); // ✅ pushes just the document
       })
       .addCase(SaveDocument.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-
-      // ================= Get Documents =================
-      .addCase(GetMyDocuments.pending, (state) => {
+      // ================= Ingest Document =================
+      .addCase(DocumentIngest.pending, (state) => {
         state.loading = true;
       })
-      .addCase(GetMyDocuments.fulfilled, (state, action) => {
+      .addCase(DocumentIngest.fulfilled, (state, action) => {
         state.loading = false;
-        state.documents = action.payload;
       })
-      .addCase(GetMyDocuments.rejected, (state, action) => {
+      .addCase(DocumentIngest.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-
 
       // ================= Delete Document =================
       .addCase(DeleteDocument.pending, (state) => {
@@ -154,7 +161,6 @@ const documentSlice = createSlice({
       })
       .addCase(DeleteDocument.fulfilled, (state, action) => {
         state.loading = false;
-
         state.documents = state.documents.filter(
           (doc) => doc._id !== action.payload
         );
@@ -162,8 +168,21 @@ const documentSlice = createSlice({
       .addCase(DeleteDocument.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // ================= Get My Documents =================
+      .addCase(getMyDocuments.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getMyDocuments.fulfilled, (state, action) => {
+        state.loading = false;
+        state.documents = action.payload; // ✅ array directly
+      })
+      .addCase(getMyDocuments.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-module.exports = documentSlice.reducer;
+export default documentSlice.reducer;

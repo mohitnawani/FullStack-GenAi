@@ -1,6 +1,6 @@
 import { useState } from "react";
-import DocumentUpload from "../components/upload/DocumentUpload";
-import DocumentList from "../components/upload/DocumentList";
+import DocumentUpload from "../components/DocumentUpload";
+
 
 const Dashboard = () => {
   const [refresh, setRefresh] = useState(0);
