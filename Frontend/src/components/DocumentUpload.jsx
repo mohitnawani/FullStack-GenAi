@@ -1,14 +1,12 @@
 import { useRef, useState } from "react";
-import  { useDispatch } from "react-redux";
-import  {
+import { useDispatch } from "react-redux";
+import {
   UploadSignature,
   SaveDocument,
   getMyDocuments,
-  DeleteDocument,
   DocumentIngest,
   UploadDocument,
-  
-} from "../store/slices/documentSlice" ;
+} from "../store/slices/documentSlice";
 
 const DocumentUpload = ({ onUploadSuccess }) => {
   const dispatch = useDispatch();
@@ -39,25 +37,20 @@ const DocumentUpload = ({ onUploadSuccess }) => {
       const type = isPDF ? "pdf" : "video";
 
       // Step 1 — get signature
-      console.log("Step 1: Getting upload signature...");
       const signatureData = await dispatch(
         UploadSignature(type)
       ).unwrap();
-      console.log("Signature received:", signatureData);
 
-      // Step 2 — upload to Cloudinary directly (needs progress callback)
-      console.log("Step 2: Uploading to Cloudinary...");
+      // Step 2 — upload to Cloudinary
       const cloudinaryRes = await dispatch(
         UploadDocument({
           file,
           signatureData,
-          onProgress: (percent) => setProgress(percent)
+          onProgress: (percent) => setProgress(percent),
         })
       ).unwrap();
-      console.log("Cloudinary response:", cloudinaryRes);
 
-      // Step 3 — save metadata to backend
-      console.log("Step 3: Saving metadata...");
+      // Step 3 — save metadata
       await dispatch(
         SaveDocument({
           cloudinaryPublicId: cloudinaryRes.public_id,
@@ -68,15 +61,11 @@ const DocumentUpload = ({ onUploadSuccess }) => {
         })
       ).unwrap();
 
-      console.log("Step 4: start injesting document...");
       // Step 4 — ingest document
-      const ingestResult = await dispatch(DocumentIngest(cloudinaryRes.secure_url)).unwrap();
-      console.log("Ingest result:", ingestResult);
+      await dispatch(DocumentIngest(cloudinaryRes.secure_url)).unwrap();
 
       // Step 5 — refresh document list
-      console.log("Step 5: Refreshing document list...");
-      const myDocuments = await dispatch(getMyDocuments()).unwrap();
-      console.log("My documents:", myDocuments);
+      await dispatch(getMyDocuments()).unwrap();
 
       setProgress(100);
       setSuccess(true);
@@ -94,8 +83,10 @@ const DocumentUpload = ({ onUploadSuccess }) => {
     }
   };
 
+  // ✅ changed UI — compact style to fit inside sidebar
   return (
-    <div className="p-6 border-2 border-dashed border-base-300 rounded-xl text-center">
+    <div className="flex flex-col gap-2">
+
       <input
         type="file"
         ref={fileInputRef}
@@ -105,37 +96,58 @@ const DocumentUpload = ({ onUploadSuccess }) => {
         id="file-input"
       />
 
+      {/* upload button */}
       <label
         htmlFor="file-input"
-        className={`btn btn-primary ${uploading ? "btn-disabled" : ""}`}
+        className={`
+          flex items-center justify-center gap-2
+          border border-dashed border-base-300
+          rounded-lg p-3 cursor-pointer
+          hover:bg-base-200 transition-colors
+          ${uploading ? "opacity-50 pointer-events-none" : ""}
+        `}
       >
-        {uploading ? "Uploading..." : "Upload PDF or Video"}
+        {uploading ? (
+          <span className="loading loading-spinner loading-xs" />
+        ) : (
+          <i className="ti ti-upload text-base-content/40" style={{ fontSize: 16 }} aria-hidden="true" />
+        )}
+        <div>
+          <p className="text-xs text-base-content/60">
+            {uploading ? "Uploading..." : "Upload PDF or Video"}
+          </p>
+          <p className="text-xs text-base-content/30">
+            Max 10MB / 100MB
+          </p>
+        </div>
       </label>
 
+      {/* progress bar */}
       {uploading && (
-        <div className="mt-4">
+        <div>
           <progress
             className="progress progress-primary w-full"
             value={progress}
             max="100"
           />
-          <p className="text-sm text-base-content/60 mt-1">{progress}%</p>
+          <p className="text-xs text-base-content/40 text-center">
+            {progress}%
+          </p>
         </div>
       )}
 
+      {/* error */}
       {error && (
-        <p className="text-error text-sm mt-3">{error}</p>
+        <p className="text-xs text-error">{error}</p>
       )}
 
+      {/* success */}
       {success && (
-        <p className="text-success text-sm mt-3">
-          Upload successful! Indexing started...
+        <p className="text-xs text-success">
+          Uploaded! Indexing started...
         </p>
       )}
 
-      <p className="text-xs text-base-content/40 mt-3">
-        PDF (max 10MB) or Video (max 100MB)
-      </p>
     </div>
   );
 };

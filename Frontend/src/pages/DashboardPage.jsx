@@ -1,16 +1,106 @@
+// pages/DashboardPage.jsx
+
 import { useState } from "react";
-import DocumentUpload from "../components/DocumentUpload";
+import { useDispatch } from "react-redux";
+import { resetChat, fetchChatHistory } from "../store/slices/chatSlice";
+import Sidebar from "../components/Sidebar";
+import ChatWindow from "../components/ChatWindow";
+import ChatInput from "../components/ChatInput";
 
+const DashboardPage = () => {
+  const dispatch = useDispatch();
+  const [activeDocument, setActiveDocument] = useState(null);
 
-const Dashboard = () => {
-  const [refresh, setRefresh] = useState(0);
+  const handleSelectDocument = (doc) => {
+    // reset chat when switching documents
+    dispatch(resetChat());
+    setActiveDocument(doc);
+    // load chat history for selected document
+    dispatch(fetchChatHistory(doc._id));
+  };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">My Documents</h1>
-      <DocumentUpload onUploadSuccess={() => setRefresh((r) => r + 1)} />
+    <div className="flex h-screen bg-base-100 overflow-hidden">
+
+      {/* LEFT — sidebar */}
+      <Sidebar
+        activeDocumentId={activeDocument?._id}
+        onSelectDocument={handleSelectDocument}
+      />
+
+      {/* RIGHT — main chat area */}
+      <div className="flex flex-col flex-1 min-w-0">
+
+        {/* no document selected */}
+        {!activeDocument ? (
+          <div className="flex flex-col items-center justify-center h-full gap-4">
+            <div className="w-12 h-12 rounded-full bg-base-200 flex items-center justify-center">
+              <i
+                className="ti ti-message-dots text-base-content/30"
+                style={{ fontSize: 22 }}
+                aria-hidden="true"
+              />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium text-base-content/50">
+                No document selected
+              </p>
+              <p className="text-xs text-base-content/30 mt-1">
+                Upload or select a document from the sidebar to start chatting
+              </p>
+            </div>
+          </div>
+
+        ) : (
+
+          <>
+            {/* chat header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-base-300">
+              <div className="flex items-center gap-3">
+                <i
+                  className={`
+                    ${activeDocument.resourceType === "video"
+                      ? "ti ti-video"
+                      : "ti ti-file-type-pdf"
+                    } text-base-content/50
+                  `}
+                  style={{ fontSize: 16 }}
+                  aria-hidden="true"
+                />
+                <div>
+                  <p className="text-sm font-medium text-base-content">
+                    {activeDocument.filename}
+                  </p>
+                  <p className="text-xs text-base-content/40">
+                    {activeDocument.resourceType === "pdf" && activeDocument.pageCount
+                      ? `${activeDocument.pageCount} pages · `
+                      : ""}
+                    Ready to answer
+                  </p>
+                </div>
+              </div>
+
+              {/* clear chat button */}
+              <button
+                onClick={() => dispatch(resetChat())}
+                className="text-xs text-base-content/40 hover:text-base-content/60
+                           border border-base-300 rounded px-2 py-1
+                           hover:bg-base-200 transition-colors"
+              >
+                Clear chat
+              </button>
+            </div>
+
+            {/* messages */}
+            <ChatWindow documentId={activeDocument._id} />
+
+            {/* input */}
+            <ChatInput documentId={activeDocument._id} />
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
-export default Dashboard;
+export default DashboardPage;

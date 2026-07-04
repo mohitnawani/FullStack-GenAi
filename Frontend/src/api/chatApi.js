@@ -1,4 +1,4 @@
-const axiosClient = require("../utils/axiosclient");
+import  axiosClient from "../utils/axiosclient";
 
 //POST /api/chat 
 const askQuestion = async(question,documentId)=>{
@@ -27,4 +27,4 @@ const getDocumentStatus = async (documentId) => {
   return response.data;
 };
 
-module.exports= { askQuestion, getChatHistory, clearChatHistory, getDocumentStatus };
+export { askQuestion, getChatHistory, clearChatHistory, getDocumentStatus };

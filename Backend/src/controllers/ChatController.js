@@ -80,49 +80,49 @@ const chat = async (req, res) => {
 };
 
 
-// // GET /api/chat/:documentId  — fetch chat history
-// const getChatHistory = async (req, res) => {
-//   try {
-//     const { documentId } = req.params;
-//     const userId = req.result._id;
+// GET /api/chat/:documentId  — fetch chat history
+const getChatHistory = async (req, res) => {
+  try {
+    const { documentId } = req.params;
+    const userId = req.result._id;
 
-//     const chatHistory = await ChatHistory.findOne({ userId, documentId });
+    const chatHistory = await ChatHistory.findOne({ userId, documentId });
 
-//     return res.status(200).json({
-//       success: true,
-//       messages: chatHistory ? chatHistory.messages : [],
-//     });
+    return res.status(200).json({
+      success: true,
+      messages: chatHistory ? chatHistory.messages : [],
+    });
 
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-// // DELETE /api/chat/:documentId  — clear chat history
-// const clearChatHistory = async (req, res) => {
-//   try {
-//     const { documentId } = req.params;
-//     const userId = req.result._id;
+// DELETE /api/chat/:documentId  — clear chat history
+const clearChatHistory = async (req, res) => {
+  try {
+    const { documentId } = req.params;
+    const userId = req.result._id;
 
-//     await ChatHistory.findOneAndUpdate(
-//       { userId, documentId },
-//       { $set: { messages: [] } }
-//     );
+    await ChatHistory.findOneAndUpdate(
+      { userId, documentId },
+      { $set: { messages: [] } }
+    );
 
-//     return res.status(200).json({
-//       success: true,
-//       message: "Chat history cleared",
-//     });
+    return res.status(200).json({
+      success: true,
+      message: "Chat history cleared",
+    });
 
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-module.exports = {chat};
+module.exports = {chat, getChatHistory, clearChatHistory};
