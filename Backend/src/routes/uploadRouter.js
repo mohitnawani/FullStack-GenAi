@@ -9,7 +9,7 @@ const userMiddleware = require('../middleware/userMiddleware');
 uploadRouter.get('/upload-signature', userMiddleware, generateUploadSignature);
 uploadRouter.post('/save', userMiddleware, saveDocumentMetadata);
 uploadRouter.post('/ingest', userMiddleware, DocumentIngest);
-uploadRouter.post('/my-documents', userMiddleware, getMyDocuments);
+uploadRouter.get('/my-documents', userMiddleware, getMyDocuments);
 uploadRouter.delete('/:id', userMiddleware, deleteDocument);
 
 module.exports = uploadRouter;

@@ -4,11 +4,11 @@ import  {
   UploadSignature,
   SaveDocument,
   getMyDocuments,
-  deleteDocument,
-  ingestDocument,
+  DeleteDocument,
+  DocumentIngest,
+  UploadDocument,
   
 } from "../store/slices/documentSlice" ;
-import {uploadToCloudinary } from "../api/documentApi";
 
 const DocumentUpload = ({ onUploadSuccess }) => {
   const dispatch = useDispatch();
@@ -47,11 +47,13 @@ const DocumentUpload = ({ onUploadSuccess }) => {
 
       // Step 2 — upload to Cloudinary directly (needs progress callback)
       console.log("Step 2: Uploading to Cloudinary...");
-      const cloudinaryRes = await uploadToCloudinary(
-        file,
-        signatureData,
-        (percent) => setProgress(percent)
-      );
+      const cloudinaryRes = await dispatch(
+        UploadDocument({
+          file,
+          signatureData,
+          onProgress: (percent) => setProgress(percent)
+        })
+      ).unwrap();
       console.log("Cloudinary response:", cloudinaryRes);
 
       // Step 3 — save metadata to backend
@@ -66,9 +68,15 @@ const DocumentUpload = ({ onUploadSuccess }) => {
         })
       ).unwrap();
 
-      // Step 4 — refresh document list
-      console.log("Step 4: Refreshing document list...");
-      await dispatch(getMyDocuments());
+      console.log("Step 4: start injesting document...");
+      // Step 4 — ingest document
+      const ingestResult = await dispatch(DocumentIngest(cloudinaryRes.secure_url)).unwrap();
+      console.log("Ingest result:", ingestResult);
+
+      // Step 5 — refresh document list
+      console.log("Step 5: Refreshing document list...");
+      const myDocuments = await dispatch(getMyDocuments()).unwrap();
+      console.log("My documents:", myDocuments);
 
       setProgress(100);
       setSuccess(true);
