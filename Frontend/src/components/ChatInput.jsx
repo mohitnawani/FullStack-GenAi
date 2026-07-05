@@ -1,7 +1,9 @@
-// components/ChatInput.jsx
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sendQuestion } from "../store/slices/chatSlice";
+import { IoArrowUp } from "react-icons/io5";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { MdAttachFile } from "react-icons/md";
 
 const ChatInput = ({ documentId }) => {
   const dispatch = useDispatch();
@@ -10,14 +12,11 @@ const ChatInput = ({ documentId }) => {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
-
     const question = input.trim();
-    setInput(""); // clear input immediately
-
+    setInput("");
     dispatch(sendQuestion({ question, documentId }));
   };
 
-  // send on Enter key
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -30,8 +29,11 @@ const ChatInput = ({ documentId }) => {
       <div className="flex items-center gap-2 bg-base-200 border border-base-300 rounded-xl px-3 py-2">
 
         {/* attach button */}
-        <button className="btn btn-ghost btn-xs btn-circle">
-          <i className="ti ti-paperclip text-base-content/50" style={{ fontSize: 16 }} aria-hidden="true" />
+        <button className="p-1 rounded-lg hover:bg-base-300 transition-colors">
+          <MdAttachFile
+            size={18}
+            className="text-base-content/40"
+          />
         </button>
 
         {/* text input */}
@@ -51,12 +53,30 @@ const ChatInput = ({ documentId }) => {
         <button
           onClick={handleSend}
           disabled={!input.trim() || isLoading}
-          className="btn btn-primary btn-xs btn-circle"
+          className={`
+            flex items-center justify-center
+            w-8 h-8 rounded-full
+            transition-all duration-200
+            ${!input.trim() || isLoading
+              ? "bg-base-300 cursor-not-allowed"
+              : "bg-primary hover:scale-105 active:scale-95 cursor-pointer"
+            }
+          `}
         >
           {isLoading ? (
-            <span className="loading loading-spinner loading-xs" />
+            <AiOutlineLoading3Quarters
+              size={16}
+              className="text-base-content/40 animate-spin"
+            />
           ) : (
-            <i className="ti ti-arrow-up" style={{ fontSize: 14 }} aria-hidden="true" />
+            <IoArrowUp
+              size={16}
+              className={
+                !input.trim()
+                  ? "text-base-content/30"
+                  : "text-primary-content"
+              }
+            />
           )}
         </button>
 
