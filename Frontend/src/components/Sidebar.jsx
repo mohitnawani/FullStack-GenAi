@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getMyDocuments, DeleteDocument } from "../store/slices/documentSlice";
 import DocumentUpload from "./DocumentUpload";
 
-const Sidebar = ({ activeDocumentId, onSelectDocument }) => {
+const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument }) => {
   const dispatch = useDispatch();
   const { documents, loading } = useSelector((state) => state.document);
 
@@ -15,6 +15,7 @@ const Sidebar = ({ activeDocumentId, onSelectDocument }) => {
   const handleDelete = async (e, docId) => {
     e.stopPropagation(); // prevent selecting doc when deleting
     dispatch(DeleteDocument(docId));
+    onDeleteDocument?.(docId);
   };
 
   const getStatusColor = (status) => {

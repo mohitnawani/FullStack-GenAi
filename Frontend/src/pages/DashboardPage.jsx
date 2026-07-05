@@ -1,7 +1,8 @@
 // pages/DashboardPage.jsx
 
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
 import { resetChat, fetchChatHistory } from "../store/slices/chatSlice";
 import Sidebar from "../components/Sidebar";
 import ChatWindow from "../components/ChatWindow";
@@ -9,15 +10,53 @@ import ChatInput from "../components/ChatInput";
 
 const DashboardPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { documentId } = useParams();
+  const { documents } = useSelector((state) => state.document);
   const [activeDocument, setActiveDocument] = useState(null);
 
   const handleSelectDocument = (doc) => {
     // reset chat when switching documents
     dispatch(resetChat());
     setActiveDocument(doc);
+    navigate(`/dashboard/${doc._id}`);
     // load chat history for selected document
     dispatch(fetchChatHistory(doc._id));
   };
+
+  const handleDeleteDocument = (docId) => {
+    if (activeDocument?._id !== docId) return;
+
+    setActiveDocument(null);
+    dispatch(resetChat());
+    navigate("/dashboard", { replace: true });
+  };
+
+  useEffect(() => {
+    if (!documentId) {
+      if (activeDocument) {
+        setActiveDocument(null);
+        dispatch(resetChat());
+      }
+      return;
+    }
+
+    if (documents.length === 0) return;
+
+    const doc = documents.find((item) => item._id === documentId);
+
+    if (!doc || doc.status !== "processed") {
+      setActiveDocument(null);
+      dispatch(resetChat());
+      navigate("/dashboard", { replace: true });
+      return;
+    }
+
+    if (activeDocument?._id === doc._id) return;
+
+    setActiveDocument(doc);
+    dispatch(fetchChatHistory(doc._id));
+  }, [activeDocument?._id, dispatch, documentId, documents, navigate]);
 
   return (
     <div className="flex h-screen bg-base-100 overflow-hidden">
@@ -26,6 +65,7 @@ const DashboardPage = () => {
       <Sidebar
         activeDocumentId={activeDocument?._id}
         onSelectDocument={handleSelectDocument}
+        onDeleteDocument={handleDeleteDocument}
       />
 
       {/* RIGHT — main chat area */}
