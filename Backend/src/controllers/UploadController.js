@@ -147,7 +147,8 @@ const getMyDocuments = async (req, res) => {
 const deleteDocument = async (req , res)=>{
   try{
     const {id}= req.params;
-    const doc = await Document.findOneAndDelete({_id:id, userId:req.request._id});
+    console.log("Deleting document with ID:", id);
+    const doc = await Document.findOneAndDelete({_id:id, userId:req.result._id});
 
     if(!doc)
     {

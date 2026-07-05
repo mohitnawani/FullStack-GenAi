@@ -43,20 +43,4 @@ const ingestDocument = async (documentId, cloudinaryUrl) => {
 }
 
 
-// ── RETRIVAL PIPELINE
-const retriveDocument=async ()=>{
-  try{
-
-  }
-
-  catch(err)
-  {
-    console.log("error ", err)
-    
-  }
-}
-
-
-
-
 module.exports = { ingestDocument };

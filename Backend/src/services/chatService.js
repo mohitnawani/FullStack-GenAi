@@ -34,12 +34,18 @@ const chatService = async (question, documentId, chatHistory = []) => {
       .map((m) => `${m.role === "user" ? "Student" : "AI"}: ${m.content}`)
       .join("\n");
 
-    // Step 5: build prompt
-    const prompt = `
+const prompt = `
 You are an AI tutor helping a student understand their study material.
 Answer the question based ONLY on the context provided below.
 If the answer is not in the context, say "I could not find this in your document."
-Keep answers clear and concise.
+
+Follow these formatting rules:
+- Use **bold** for important terms and key concepts
+- Use bullet points for lists and multiple points
+- Use numbered lists for steps or sequences
+- Use headings (##) for different sections if answer is long
+- Keep answers concise and easy to read
+- Add a line break between sections
 
 Context from the document:
 ${context}
