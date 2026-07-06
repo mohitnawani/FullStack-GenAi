@@ -5,18 +5,33 @@ const splitTextIntoChunks = require("./textChunker");
 const { generateEmbeddings, embeddings } = require("./embeddingService");
 const { upsertVectors, querySimilarChunks } = require("./pineconeService");
 const Document = require("../models/Document");
+const extractTextFromVideo = require("./videoService");
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // ── INGESTION (called after PDF uploaded to Cloudinary) ──
-const ingestDocument = async (documentId, cloudinaryUrl) => {
+const ingestDocument = async (documentId, cloudinaryUrl, resourceType) => {
   try {
-    console.log(`reched ${documentId} and ${cloudinaryUrl}`)
-    // update status → processing
+    console.log(`reached ${documentId} and ${cloudinaryUrl}`);
+
     await Document.findByIdAndUpdate(documentId, { status: "processing" });
 
-    // Step 1: extract text from PDF
-    const { text, pageCount } = await extractTextFromPDF(cloudinaryUrl);
+    let text;
+    let pageCount = null;
+    let duration = null;
+
+    // Step 1: extract text
+    if (resourceType === "pdf") {
+      const result = await extractTextFromPDF(cloudinaryUrl);
+      text = result.text;
+      pageCount = result.pageCount;
+    }
+
+    if (resourceType === "video") {
+      const result = await extractTextFromVideo(cloudinaryUrl);
+      text = result.text;
+      duration = result.duration;
+    }
 
     // Step 2: split into chunks
     const chunks = await splitTextIntoChunks(text, documentId);
@@ -27,10 +42,11 @@ const ingestDocument = async (documentId, cloudinaryUrl) => {
     // Step 4: store in pinecone
     await upsertVectors(embeddedChunks, documentId);
 
-    // Step 5: update document in mongodb
+    // Step 5: update mongodb
     await Document.findByIdAndUpdate(documentId, {
       status: "processed",
-      pageCount,
+      pageCount,          // null for video ✅
+      duration,           // null for pdf ✅
       vectorNamespace: documentId,
     });
 
@@ -40,7 +56,8 @@ const ingestDocument = async (documentId, cloudinaryUrl) => {
     await Document.findByIdAndUpdate(documentId, { status: "failed" });
     throw new Error(`Ingestion failed: ${error.message}`);
   }
-}
+};
+
 
 
 module.exports = { ingestDocument };

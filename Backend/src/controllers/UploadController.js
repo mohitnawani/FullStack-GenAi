@@ -121,7 +121,7 @@ const DocumentIngest = async (req, res) => {
     const documentId = doc._id;
     console.log("documentId", documentId);
 
-    const output = await ingestDocument(documentId, cloudinaryUrl);
+    const output = await ingestDocument(documentId, cloudinaryUrl, doc.resourceType);
 
     res.status(200).json(output);
   } catch (error) {

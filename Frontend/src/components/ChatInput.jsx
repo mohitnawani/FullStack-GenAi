@@ -4,7 +4,7 @@ import { sendQuestion } from "../store/slices/chatSlice";
 import { IoArrowUp } from "react-icons/io5";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { MdAttachFile } from "react-icons/md";
-
+import DocumentUpload from "./DocumentUpload";
 const ChatInput = ({ documentId }) => {
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state.chat);
