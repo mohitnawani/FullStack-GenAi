@@ -7,8 +7,10 @@ import {
   DocumentIngest,
   UploadDocument,
 } from "../store/slices/documentSlice";
+import useStatusPolling from "../../hooks/useStatusPolling";
 
 const DocumentUpload = ({ onUploadSuccess }) => {
+  const { startPolling } = useStatusPolling();
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
 
@@ -17,71 +19,75 @@ const DocumentUpload = ({ onUploadSuccess }) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+const handleFileChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const isPDF = file.type === "application/pdf";
-    const isVideo = file.type.startsWith("video/");
-    if (!isPDF && !isVideo) {
-      setError("Only PDF or video files allowed");
-      return;
+  const isPDF = file.type === "application/pdf";
+  const isVideo = file.type.startsWith("video/");
+  if (!isPDF && !isVideo) {
+    setError("Only PDF or video files allowed");
+    return;
+  }
+
+  try {
+    setUploading(true);
+    setError(null);
+    setProgress(0);
+    setSuccess(false);
+
+    const type = isPDF ? "pdf" : "video";
+
+    // Step 1 — get signature
+    const signatureData = await dispatch(
+      UploadSignature(type)
+    ).unwrap();
+
+    // Step 2 — upload to Cloudinary
+    const cloudinaryRes = await dispatch(
+      UploadDocument({
+        file,
+        signatureData,
+        onProgress: (percent) => setProgress(percent),
+      })
+    ).unwrap();
+
+    // Step 3 — save metadata → get document back
+    const savedDoc = await dispatch(
+      SaveDocument({
+        cloudinaryPublicId: cloudinaryRes.public_id,
+        secureUrl: cloudinaryRes.secure_url,
+        filename: file.name,
+        resourceType: type,
+        duration: cloudinaryRes.duration || null,
+      })
+    ).unwrap();
+
+    // Step 4 — trigger ingestion but DON'T await ✅
+    // runs in background — polling will track progress
+    dispatch(DocumentIngest(cloudinaryRes.secure_url));
+
+    // Step 5 — refresh list immediately
+    await dispatch(getMyDocuments()).unwrap();
+
+    // Step 6 — start polling for this document ✅
+    startPolling(savedDoc._id);
+
+    setProgress(100);
+    setSuccess(true);
+    onUploadSuccess?.();
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
 
-    try {
-      setUploading(true);
-      setError(null);
-      setProgress(0);
-      setSuccess(false);
-
-      const type = isPDF ? "pdf" : "video";
-
-      // Step 1 — get signature
-      const signatureData = await dispatch(
-        UploadSignature(type)
-      ).unwrap();
-
-      // Step 2 — upload to Cloudinary
-      const cloudinaryRes = await dispatch(
-        UploadDocument({
-          file,
-          signatureData,
-          onProgress: (percent) => setProgress(percent),
-        })
-      ).unwrap();
-
-      // Step 3 — save metadata
-      await dispatch(
-        SaveDocument({
-          cloudinaryPublicId: cloudinaryRes.public_id,
-          secureUrl: cloudinaryRes.secure_url,
-          filename: file.name,
-          resourceType: type,
-          duration: cloudinaryRes.duration || null,
-        })
-      ).unwrap();
-
-      // Step 4 — ingest document
-      await dispatch(DocumentIngest(cloudinaryRes.secure_url)).unwrap();
-
-      // Step 5 — refresh document list
-      await dispatch(getMyDocuments()).unwrap();
-
-      setProgress(100);
-      setSuccess(true);
-      onUploadSuccess?.();
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-
-    } catch (err) {
-      console.error("Upload failed:", err);
-      setError(err?.message || "Upload failed");
-    } finally {
-      setUploading(false);
-    }
-  };
+  } catch (err) {
+    console.error("Upload failed:", err);
+    setError(err?.message || "Upload failed");
+  } finally {
+    setUploading(false);
+  }
+};
 
   // ✅ changed UI — compact style to fit inside sidebar
   return (

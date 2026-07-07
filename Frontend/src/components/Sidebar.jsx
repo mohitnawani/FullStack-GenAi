@@ -12,44 +12,51 @@ const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument }) => {
     dispatch(getMyDocuments());
   }, [dispatch]);
 
+  // ✅ auto refresh when any document is still processing
+  useEffect(() => {
+    const hasProcessingDocs = documents.some(
+      (doc) => doc.status === "pending" || doc.status === "processing"
+    );
+
+    if (!hasProcessingDocs) return; // no need to poll
+
+    const interval = setInterval(() => {
+      dispatch(getMyDocuments());
+    }, 4000); // every 4 seconds
+
+    return () => clearInterval(interval); // cleanup
+  }, [documents, dispatch]);
+
   const handleDelete = async (e, docId) => {
-    e.stopPropagation(); // prevent selecting doc when deleting
+    e.stopPropagation();
     dispatch(DeleteDocument(docId));
     onDeleteDocument?.(docId);
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "processed":
-        return "text-success";
-      case "processing":
-        return "text-warning";
-      case "pending":
-        return "text-warning";
-      case "failed":
-        return "text-error";
-      default:
-        return "text-muted";
+      case "processed":  return "text-success";
+      case "processing": return "text-warning";
+      case "pending":    return "text-warning";
+      case "failed":     return "text-error";
+      default:           return "text-base-content/40";
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case "processed":
-        return "Ready";
-      case "processing":
-        return "Indexing...";
-      case "pending":
-        return "Uploading...";
-      case "failed":
-        return "Failed";
-      default:
-        return "Unknown";
+      case "processed":  return "Ready";
+      case "processing": return "Indexing...";
+      case "pending":    return "Pending...";
+      case "failed":     return "Failed";
+      default:           return "Unknown";
     }
   };
 
   const getFileIcon = (resourceType) => {
-    return resourceType === "video" ? "ti ti-video" : "ti ti-file-type-pdf";
+    return resourceType === "video"
+      ? "ti ti-video"
+      : "ti ti-file-type-pdf";
   };
 
   return (
@@ -79,7 +86,6 @@ const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument }) => {
           <div
             key={doc._id}
             onClick={() => {
-              // only allow selecting processed documents
               if (doc.status === "processed") {
                 onSelectDocument(doc);
               }
@@ -87,10 +93,9 @@ const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument }) => {
             className={`
               flex items-center gap-2 p-2 rounded-lg cursor-pointer group
               transition-colors duration-150
-              ${
-                activeDocumentId === doc._id
-                  ? "bg-base-300 border border-base-300"
-                  : "hover:bg-base-300"
+              ${activeDocumentId === doc._id
+                ? "bg-base-300 border border-base-300"
+                : "hover:bg-base-300"
               }
               ${doc.status !== "processed" ? "opacity-60 cursor-not-allowed" : ""}
             `}
@@ -115,11 +120,12 @@ const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument }) => {
               </p>
             </div>
 
-            {/* delete button — shows on hover */}
+            {/* delete button */}
             <button
               type="button"
               onClick={(e) => handleDelete(e, doc._id)}
-              className="p-1 rounded text-error hover:bg-error/20 transition-colors"
+              className="p-1 rounded text-error hover:bg-error/20
+                         transition-colors opacity-0 group-hover:opacity-100"
               aria-label={`Delete ${doc.filename}`}
               title="Delete"
             >
@@ -145,9 +151,11 @@ const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument }) => {
         ))}
       </div>
 
-      {/* upload button at bottom */}
+      {/* upload at bottom */}
       <div className="p-2 border-t border-base-300">
-        <DocumentUpload onUploadSuccess={() => dispatch(getMyDocuments())} />
+        <DocumentUpload
+          onUploadSuccess={() => dispatch(getMyDocuments())}
+        />
       </div>
     </div>
   );

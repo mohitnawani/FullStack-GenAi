@@ -164,10 +164,27 @@ const deleteDocument = async (req , res)=>{
   }
 };
 
+const getDocumentStatus= async(req , res )=>{
+  try{
+    let doc = req.params.documentId;
+
+    if(!doc){
+      res.status(404).json({message:"Document not found"});
+    }
+
+    res.json({status:doc.status});
+  }
+  catch (error)
+  {
+    res.status(500).json
+  }
+}
+
 module.exports = {
   generateUploadSignature,
   saveDocumentMetadata,
   DocumentIngest,
   getMyDocuments,
-  deleteDocument, 
+  deleteDocument,
+  getDocumentStatus,
 };
