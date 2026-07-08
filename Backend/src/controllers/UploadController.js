@@ -122,9 +122,12 @@ const DocumentIngest = async (req, res) => {
     console.log("documentId", documentId);
 
     const output = await ingestDocument(documentId, cloudinaryUrl, doc.resourceType);
+    console.log("ingest output", output);
+    
 
     res.status(200).json(output);
   } catch (error) {
+    console.error("Document ingest failed:", error);
     res.status(500).json({ message: "Failed to fetch documents", error: error.message });
   }
 };
@@ -164,21 +167,33 @@ const deleteDocument = async (req , res)=>{
   }
 };
 
-const getDocumentStatus= async(req , res )=>{
-  try{
-    let doc = req.params.documentId;
+const getDocumentStatus = async (req, res) => {
+  try {
+    const id = req.params.documentId;
 
-    if(!doc){
-      res.status(404).json({message:"Document not found"});
+    if (!id) {
+      return res.status(400).json({ message: "Document ID is required" });
     }
 
-    res.json({status:doc.status});
+    const document = await Document.findOne({
+      _id: id,
+      userId: req.result._id,
+    });
+
+    if (!document) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    return res.status(200).json({
+      status: document.status,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
-  catch (error)
-  {
-    res.status(500).json
-  }
-}
+};
 
 module.exports = {
   generateUploadSignature,

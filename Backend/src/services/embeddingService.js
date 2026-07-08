@@ -12,7 +12,6 @@ const generateEmbeddings = async (chunks) => {
 
     const embeddedChunks = await Promise.all(
       chunks.map(async (chunk, index) => {
-        console.log(`Starting chunk ${index}`);
 
         // This method is correct and returns an array of numbers (Vector)
         const vector = await embeddings.embedQuery(chunk.text);

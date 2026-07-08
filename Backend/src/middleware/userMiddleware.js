@@ -4,15 +4,13 @@ const jwt =require("jsonwebtoken");
 
 const userMiddleware= async(req,res,next)=>{
     try{
-        console.log("User middleware called");
         const {token}=req.cookies;
-        console.log("Token from cookies:", token);
+
         if(!token){
             throw new Error("Token is not present");
         }
 
         const payload =jwt.verify(token,process.env.JWT_SECRET);
-        console.log("Token payload:", payload);
         const {_id}=payload;
 
         if(!_id)
@@ -21,7 +19,7 @@ const userMiddleware= async(req,res,next)=>{
         }
 
         const result = await User.findById(_id);
-        console.log("User middleware - user found:", result);
+
         if(!result)
         {
             throw new Error("User Doesn't Exist");

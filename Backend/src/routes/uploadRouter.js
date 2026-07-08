@@ -11,6 +11,6 @@ uploadRouter.post('/save', userMiddleware, saveDocumentMetadata);
 uploadRouter.post('/ingest', userMiddleware, DocumentIngest);
 uploadRouter.get('/my-documents', userMiddleware, getMyDocuments);
 uploadRouter.delete('/:id', userMiddleware, deleteDocument);
-uploadRouter.get('/:documentId/staus',userMiddleware,getDocumentStatus)
+uploadRouter.get('/:documentId/status',userMiddleware,getDocumentStatus)
 
 module.exports = uploadRouter;
