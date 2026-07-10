@@ -19,6 +19,19 @@ const register = async (req , res)=>{
 
          await user.save();
 
+        const token = jwt.sign({
+            _id:user._id,
+            emailId:user.emailId,
+            firstName:user.firstName,
+        }, process.env.JWT_SECRET, {expiresIn: '1h'});
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 3600000 // 1 hour
+        });
+
          return res.status(201).json({message: 'User registered successfully',
          });
 

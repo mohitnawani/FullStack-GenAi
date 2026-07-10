@@ -81,6 +81,19 @@ const DashboardPage = () => {
                 aria-hidden="true"
               />
             </div>
+
+            <button
+                onClick={() => dispatch(logoutUser())}
+                className="text-xs text-white hover:text-base-content/60
+                           border border-bs-base-content rounded px-2 py-1
+                           hover:bg-base-200 transition-colors"
+              >
+                Logout
+            </button>
+
+
+
+            
             <div className="text-center">
               <p className="text-sm font-medium text-base-content/50">
                 No document selected
