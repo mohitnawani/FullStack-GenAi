@@ -1,5 +1,5 @@
 // pages/DashboardPage.jsx
-
+import { logoutUser } from "../store/slices/authslice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
@@ -121,13 +121,13 @@ const DashboardPage = () => {
               </div>
 
               {/* clear chat button */}
-              <button
-                onClick={() => dispatch(resetChat())}
+               <button
+                onClick={() => dispatch(logoutUser())}
                 className="text-xs text-base-content/40 hover:text-base-content/60
                            border border-base-300 rounded px-2 py-1
                            hover:bg-base-200 transition-colors"
               >
-                Clear chat
+                Logout
               </button>
             </div>
 
