@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const cookie = require("cookie");
 const redis = require('../config/redisdb');
 
+// /user/register
 const register = async (req , res)=>{
     try{
         const {firstName, LastName, emailId, password} = req.body;
@@ -29,6 +30,7 @@ const register = async (req , res)=>{
         return res.status(500).json({message: 'Internal Server Error'});
     }
 }
+// /user/login
 const login = async (req , res)=>{
     try{
         const {emailId, password} = req.body;
@@ -66,9 +68,10 @@ const login = async (req , res)=>{
         return res.status(500).json({message: 'Internal Server Error'});
     }
 }
+// /user/logout
 const logout = async (req, res) => {
   try {
-    const parsedCookies = req.cookies || (req.headers.cookie ? cookie.parse(req.headers.cookie) : {});
+    const parsedCookies = req.cookies;
     const { token } = parsedCookies;
     console.log('Logout token:', token);
 

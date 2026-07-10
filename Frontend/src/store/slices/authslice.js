@@ -40,6 +40,19 @@ export const loginUser = createAsyncThunk(
   },
 );
 
+export const logoutUser = createAsyncThunk(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.post("/user/logout");
+      console.log("Logout response:", response.data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error, "Logout failed"));
+    }
+  },
+);
+
 export const checkAuth = createAsyncThunk(
   "auth/check",
   async (_, { rejectWithValue }) => {
@@ -115,8 +128,25 @@ const authSlice = createSlice({
         state.error = action.payload || action.error.message || null;
         state.isAuthenticated = false;
         state.user = null;
-      });
-  },
+      })
+
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logoutUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.user = null;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message || null;
+        state.isAuthenticated = false;
+        state.user = null;
+      })
+
+    },
 });
 
 export default authSlice.reducer;
