@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router'
-import { loginUser } from '../store/slices/authslice'
+import { loginUser } from '../store/slices/authSlice'
 import { useEffect, useState } from 'react'
 
 const loginSchema = z.object({
