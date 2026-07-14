@@ -9,7 +9,7 @@ const uploadRouter = require('./src/routes/uploadRouter');
 const chatRouter= require('./src/routes/chatRouter')
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://full-stack-gen-ai-eta.vercel.app/login'],
   credentials: true,
 }));
 
