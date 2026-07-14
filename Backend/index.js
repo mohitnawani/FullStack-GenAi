@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const connectDB = require('./src/config/db');
 const app = express();
@@ -8,13 +10,12 @@ const cors = require('cors');
 const uploadRouter = require('./src/routes/uploadRouter');
 const chatRouter= require('./src/routes/chatRouter')
 
-// app.use(cors({
-//   origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'full-stack-gen-ai-eta.vercel.app'],
-//   credentials: true,
-// }));
-
 app.use(cors({
-  origin: true,  // allows ALL origins
+  origin: [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    process.env.FRONTEND_URL,
+  ].filter(Boolean),
   credentials: true,
 }));
 

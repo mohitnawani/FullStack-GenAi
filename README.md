@@ -74,6 +74,7 @@ Create a `.env` file inside `Backend/`.
 ```env
 PORT=5000
 NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
 
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret

@@ -5,6 +5,13 @@ const jwt = require('jsonwebtoken');
 const cookie = require("cookie");
 const redis = require('../config/redisdb');
 
+const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 3600000,
+};
+
 // /user/register
 const register = async (req , res)=>{
     try{
@@ -25,12 +32,7 @@ const register = async (req , res)=>{
             firstName:user.firstName,
         }, process.env.JWT_SECRET, {expiresIn: '1h'});
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 3600000 // 1 hour
-        });
+        res.cookie("token", token, cookieOptions);
 
          return res.status(201).json({message: 'User registered successfully',
          });
@@ -66,12 +68,7 @@ const login = async (req , res)=>{
         { expiresIn: "1h" }
         );
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 3600000 // 1 hour
-        });
+        res.cookie("token", token, cookieOptions);
         return res.status(200).json({message: 'Login successful'});
     }
 
@@ -102,7 +99,7 @@ const logout = async (req, res) => {
     await redis.set(`token:${token}`, "Blocked");
     await redis.expireAt(`token:${token}`, decoded.exp);
 
-    res.clearCookie('token');
+    res.clearCookie('token', cookieOptions);
     return res.status(200).json({ message: 'Logout successful' });
 
   } catch (err) {
