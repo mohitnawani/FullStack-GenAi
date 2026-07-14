@@ -8,8 +8,13 @@ const cors = require('cors');
 const uploadRouter = require('./src/routes/uploadRouter');
 const chatRouter= require('./src/routes/chatRouter')
 
+// app.use(cors({
+//   origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'full-stack-gen-ai-eta.vercel.app'],
+//   credentials: true,
+// }));
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'full-stack-gen-ai-eta.vercel.app'],
+  origin: true,  // allows ALL origins
   credentials: true,
 }));
 
