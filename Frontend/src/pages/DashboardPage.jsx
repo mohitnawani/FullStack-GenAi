@@ -1,5 +1,5 @@
 // pages/DashboardPage.jsx
-import { logoutUser } from "../store/slices/authslice";
+import { logoutUser } from "../store/slices/authSlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
