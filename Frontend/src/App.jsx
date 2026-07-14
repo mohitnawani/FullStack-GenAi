@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect, useRef, useState } from "react"
-import { checkAuth } from "./store/slices/authslice"
+import { checkAuth } from "./store/slices/authSlice"
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
