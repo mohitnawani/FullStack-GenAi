@@ -14,7 +14,7 @@ app.use(cors({
   origin: [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://full-stack-gen-ai-eta.vercel.app/",
+    "https://full-stack-gen-ai-eta.vercel.app",
     "https://full-stack-gen-ai-git-main-mohitnawanis-projects.vercel.app",
     "https://full-stack-gen-goaz6yzzr-mohitnawanis-projects.vercel.app",
   ],
