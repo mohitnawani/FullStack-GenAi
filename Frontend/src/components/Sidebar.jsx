@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getMyDocuments, DeleteDocument } from "../store/slices/documentSlice";
 import DocumentUpload from "./DocumentUpload";
 
-const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument }) => {
+const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument, isOpen, onClose }) => {
   const dispatch = useDispatch();
   const { documents, loading } = useSelector((state) => state.document);
 
@@ -60,12 +60,25 @@ const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument }) => {
   };
 
   return (
-    <div className="w-52 h-full bg-base-200 border-r border-base-300 flex flex-col">
+    <>
+      <button
+        type="button"
+        aria-label="Close documents panel"
+        onClick={onClose}
+        className={`fixed inset-0 z-30 bg-black/55 transition-opacity md:hidden ${isOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
+      />
+      <aside className={`fixed inset-y-0 left-0 z-40 flex w-[min(86vw,20rem)] flex-col border-r border-base-300 bg-base-200 shadow-2xl transition-transform duration-200 md:static md:h-full md:w-60 md:translate-x-0 md:shadow-none ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
       {/* header */}
-      <div className="p-3 border-b border-base-300">
-        <p className="text-xs text-base-content/50 uppercase tracking-wider font-medium">
-          My Documents
-        </p>
+      <div className="flex items-center justify-between p-3 border-b border-base-300">
+        <div>
+          <p className="text-xs text-base-content/50 uppercase tracking-wider font-medium">My Documents</p>
+          <p className="text-sm font-semibold text-base-content mt-0.5">EduMind AI</p>
+        </div>
+        <button type="button" onClick={onClose} className="btn btn-ghost btn-xs btn-circle md:hidden" aria-label="Close documents">
+          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
       </div>
 
       {/* document list */}
@@ -88,6 +101,7 @@ const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument }) => {
             onClick={() => {
               if (doc.status === "processed") {
                 onSelectDocument(doc);
+                onClose?.();
               }
             }}
             className={`
@@ -125,7 +139,7 @@ const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument }) => {
               type="button"
               onClick={(e) => handleDelete(e, doc._id)}
               className="p-1 rounded text-error hover:bg-error/20
-                         transition-colors opacity-0 group-hover:opacity-100"
+                         transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100"
               aria-label={`Delete ${doc.filename}`}
               title="Delete"
             >
@@ -157,7 +171,8 @@ const Sidebar = ({ activeDocumentId, onSelectDocument, onDeleteDocument }) => {
           onUploadSuccess={() => dispatch(getMyDocuments())}
         />
       </div>
-    </div>
+      </aside>
+    </>
   );
 };
 

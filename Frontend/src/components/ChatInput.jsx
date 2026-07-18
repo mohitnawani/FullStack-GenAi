@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { sendQuestion } from "../store/slices/chatSlice";
 import { IoArrowUp } from "react-icons/io5";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { MdAttachFile } from "react-icons/md";
-import DocumentUpload from "./DocumentUpload";
 const ChatInput = ({ documentId }) => {
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state.chat);
@@ -25,16 +23,8 @@ const ChatInput = ({ documentId }) => {
   };
 
   return (
-    <div className="px-4 py-3 border-t border-base-300">
-      <div className="flex items-center gap-2 bg-base-200 border border-base-300 rounded-xl px-3 py-2">
-
-        {/* attach button */}
-        <button className="p-1 rounded-lg hover:bg-base-300 transition-colors">
-          <MdAttachFile
-            size={18}
-            className="text-base-content/40"
-          />
-        </button>
+    <div className="px-3 sm:px-4 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-base-300 bg-base-100">
+      <div className="flex items-end gap-2 bg-base-200 border border-base-300 rounded-2xl px-3 py-2 shadow-lg shadow-black/10">
 
         {/* text input */}
         <textarea
@@ -46,7 +36,7 @@ const ChatInput = ({ documentId }) => {
           disabled={isLoading}
           className="flex-1 bg-transparent border-none outline-none resize-none
                      text-sm text-base-content placeholder:text-base-content/30
-                     max-h-24 py-0.5"
+                     max-h-28 py-1 leading-5"
         />
 
         {/* send button */}
@@ -55,7 +45,7 @@ const ChatInput = ({ documentId }) => {
           disabled={!input.trim() || isLoading}
           className={`
             flex items-center justify-center
-            w-8 h-8 rounded-full
+            w-9 h-9 shrink-0 rounded-full
             transition-all duration-200
             ${!input.trim() || isLoading
               ? "bg-base-300 cursor-not-allowed"
@@ -81,7 +71,7 @@ const ChatInput = ({ documentId }) => {
         </button>
 
       </div>
-      <p className="text-xs text-base-content/30 text-center mt-1">
+      <p className="text-[11px] text-base-content/30 text-center mt-1.5">
         Answers are based on your uploaded document only
       </p>
     </div>

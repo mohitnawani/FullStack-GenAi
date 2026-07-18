@@ -30,7 +30,7 @@ const ChatWindow = ({ documentId }) => {
 
       {/* clear chat button */}
       {messages.length > 0 && (
-        <div className="flex justify-end px-4 pt-2">
+        <div className="flex justify-end px-3 sm:px-4 pt-2">
           <button
             onClick={handleClearChat}
             className="text-xs text-base-content/40 hover:text-base-content/60
@@ -42,7 +42,7 @@ const ChatWindow = ({ documentId }) => {
       )}
 
       {/* messages area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-4">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-3 sm:px-4 py-4 flex flex-col gap-4">
 
         {/* empty state */}
         {messages.length === 0 && !isLoading && (
@@ -64,13 +64,14 @@ const ChatWindow = ({ documentId }) => {
                 "What are the key concepts?",
                 "Explain the main topics",
               ].map((suggestion) => (
-                <span
+                <button
+                  type="button"
                   key={suggestion}
                   className="text-xs px-3 py-1.5 rounded-full border border-base-300
                              text-base-content/50 cursor-pointer hover:bg-base-200"
                 >
                   {suggestion}
-                </span>
+                </button>
               ))}
             </div>
           </div>

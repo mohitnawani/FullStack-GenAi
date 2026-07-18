@@ -27,8 +27,13 @@ body,
   min-height: 100%;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at top left, rgba(79, 140, 255, 0.16), transparent 30rem),
     linear-gradient(135deg, #080b12 0%, #0d1320 48%, #0a0f19 100%);
@@ -38,6 +43,23 @@ button,
 input,
 textarea {
   font: inherit;
+}
+
+button,
+label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+textarea,
+input {
+  font-size: 16px;
+}
+
+@media (min-width: 640px) {
+  textarea,
+  input {
+    font-size: inherit;
+  }
 }
 
 ::selection {

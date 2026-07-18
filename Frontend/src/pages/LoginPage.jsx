@@ -128,10 +128,14 @@ function LoginPage() {
       </div>
 
       {/* Form panel */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      <div className="flex-1 flex items-center justify-center px-5 py-8 sm:px-6 sm:py-12">
         <div className="w-full max-w-sm">
+          <div className="flex items-center gap-2 mb-8 md:hidden">
+            <span className="w-2 h-2 rounded-full bg-[#F2A93B]" />
+            <span className="em-mono text-[11px] text-[#10131C] uppercase">EduMind AI</span>
+          </div>
           <span className="em-mono text-[11px] text-[#8A93A6] uppercase">Sign in</span>
-          <h2 className="em-serif text-[#10131C] text-3xl mt-2 mb-1">Welcome back</h2>
+          <h2 className="em-serif text-[#10131C] text-[2rem] sm:text-3xl mt-2 mb-1">Welcome back</h2>
           <p className="em-sans text-sm text-[#8A93A6] mb-8">Pick up right where you left off.</p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>

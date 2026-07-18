@@ -14,12 +14,14 @@ const DashboardPage = () => {
   const { documentId } = useParams();
   const { documents } = useSelector((state) => state.document);
   const [activeDocument, setActiveDocument] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleSelectDocument = (doc) => {
     // reset chat when switching documents
     dispatch(resetChat());
     setActiveDocument(doc);
     navigate(`/dashboard/${doc._id}`);
+    setIsSidebarOpen(false);
     // load chat history for selected document
     dispatch(fetchChatHistory(doc._id));
   };
@@ -59,13 +61,15 @@ const DashboardPage = () => {
   }, [activeDocument?._id, dispatch, documentId, documents, navigate]);
 
   return (
-    <div className="flex h-screen bg-base-100 overflow-hidden">
+    <div className="flex h-[100dvh] bg-base-100 overflow-hidden">
 
       {/* LEFT — sidebar */}
       <Sidebar
         activeDocumentId={activeDocument?._id}
         onSelectDocument={handleSelectDocument}
         onDeleteDocument={handleDeleteDocument}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       {/* RIGHT — main chat area */}
@@ -73,7 +77,17 @@ const DashboardPage = () => {
 
         {/* no document selected */}
         {!activeDocument ? (
-          <div className="flex flex-col items-center justify-center h-full gap-4">
+          <div className="flex flex-col items-center justify-center h-full gap-4 px-6 text-center">
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(true)}
+              className="btn btn-ghost btn-xs md:hidden absolute left-3 top-3"
+              aria-label="Open documents"
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            </button>
             <div className="w-12 h-12 rounded-full bg-base-200 flex items-center justify-center">
               <i
                 className="ti ti-message-dots text-base-content/30"
@@ -94,11 +108,11 @@ const DashboardPage = () => {
 
 
             
-            <div className="text-center">
-              <p className="text-sm font-medium text-base-content/50">
+            <div>
+              <p className="text-base font-medium text-base-content/70">
                 No document selected
               </p>
-              <p className="text-xs text-base-content/30 mt-1">
+              <p className="text-sm text-base-content/40 mt-1 max-w-sm">
                 Upload or select a document from the sidebar to start chatting
               </p>
             </div>
@@ -108,8 +122,18 @@ const DashboardPage = () => {
 
           <>
             {/* chat header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-base-300">
+            <div className="flex items-center justify-between gap-3 px-3 sm:px-4 py-3 border-b border-base-300 bg-base-100/90 backdrop-blur-sm">
               <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsSidebarOpen(true)}
+                  className="btn btn-ghost btn-xs md:hidden -ml-1"
+                  aria-label="Open documents"
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M4 7h16M4 12h16M4 17h16" />
+                  </svg>
+                </button>
                 <i
                   className={`
                     ${activeDocument.resourceType === "video"
@@ -121,7 +145,7 @@ const DashboardPage = () => {
                   aria-hidden="true"
                 />
                 <div>
-                  <p className="text-sm font-medium text-base-content">
+                  <p className="text-sm font-medium text-base-content truncate max-w-[12rem] sm:max-w-md">
                     {activeDocument.filename}
                   </p>
                   <p className="text-xs text-base-content/40">

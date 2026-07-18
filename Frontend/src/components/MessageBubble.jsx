@@ -85,7 +85,7 @@ const MessageBubble = ({ role, content }) => {
       {/* bubble */}
       <div
         className={`
-          max-w-xs lg:max-w-2xl px-3 py-2 text-sm leading-relaxed
+          max-w-[calc(100%_-_2.5rem)] sm:max-w-xl lg:max-w-2xl min-w-0 px-3 py-2 text-sm leading-relaxed break-words
           ${isUser
             ? "bg-primary text-primary-content rounded-2xl rounded-br-sm"
             : "bg-base-200 text-base-content rounded-2xl rounded-bl-sm border border-base-300"
